@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <title>Mon Flipbook Double Page Plein Écran</title>
+
+  <style>
+    html, body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background-color: #000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: Arial, sans-serif;
+    }
+
+    #flipbook-container {
+      position: relative;
+      display: inline-block; /* pour que les flèches se positionnent correctement */
+    }
+
+    #flipbook {
+      position: relative;
+      background-color: #000;
+      box-shadow: 0 0 30px rgba(0, 0, 0, 0.6);
+    }
+
+    .page {
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      transform-style: preserve-3d;
+      will-change: transform;
+    }
+
+    .page img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+      background-color: #000;
+    }
+
+    /* Flèches flottantes sous le flipbook */
+    .arrow {
+      position: absolute;
+      bottom: -60px;
+      font-size: 3em;
+      color: rgba(255,255,255,0.9);
+      cursor: pointer;
+      user-select: none;
+      z-index: 10;
+      transition: color 0.2s, transform 0.2s;
+    }
+
+    .arrow:hover {
+      color: #fff;
+      transform: scale(1.2);
+    }
+
+    #prev { left: 0; }
+    #next { right: 0; }
+
+    /* Bouton plein écran */
+    #fullscreen-btn {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: rgba(0, 0, 0, 0.6);
+      color: #fff;
+      border: 1px solid #fff;
+      padding: 10px 15px;
+      cursor: pointer;
+      border-radius: 4px;
+      z-index: 20;
+      transition: background 0.2s;
+    }
+
+    #fullscreen-btn:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Conteneur Flipbook -->
+  <div id="flipbook-container">
+    <div id="flipbook">
+      <div class="page"><img src="pages/page-001.png" alt="Page 1"></div>
+      <div class="page"><img src="pages/page-002.png" alt="Page 2"></div>
+      <div class="page"><img src="pages/page-003.png" alt="Page 3"></div>
+      <div class="page"><img src="pages/page-004.png" alt="Page 4"></div>
+      <div class="page"><img src="pages/page-005.png" alt="Page 5"></div>
+      <div class="page"><img src="pages/page-006.png" alt="Page 6"></div>
+      <div class="page"><img src="pages/page-007.png" alt="Page 7"></div>
+      <div class="page"><img src="pages/page-008.png" alt="Page 8"></div>
+      <div class="page"><img src="pages/page-009.png" alt="Page 9"></div>
+      <div class="page"><img src="pages/page-010.png" alt="Page 10"></div>
+      <div class="page"><img src="pages/page-011.png" alt="Page 11"></div>
+      <div class="page"><img src="pages/page-012.png" alt="Page 12"></div>
+      <div class="page"><img src="pages/page-013.png" alt="Page 13"></div>
+      <div class="page"><img src="pages/page-014.png" alt="Page 14"></div>
+      <div class="page"><img src="pages/page-015.png" alt="Page 15"></div>
+      <div class="page"><img src="pages/page-016.png" alt="Page 16"></div>
+      <div class="page"><img src="pages/page-017.png" alt="Page 17"></div>
+      <div class="page"><img src="pages/page-018.png" alt="Page 18"></div>
+      <div class="page"><img src="pages/page-019.png" alt="Page 19"></div>
+      <div class="page"><img src="pages/page-020.png" alt="Page 20"></div>
+    </div>
+
+    <!-- Flèches navigation -->
+    <div id="prev" class="arrow">❮</div>
+    <div id="next" class="arrow">❯</div>
+  </div>
+
+  <!-- Bouton plein écran -->
+  <div id="fullscreen-btn">⛶ Plein écran</div>
+
+  <script src="jquery.min.js"></script>
+  <script src="turn.js"></script>
+
+  <script>
+    $(document).ready(function () {
+      const flipbook = $("#flipbook");
+
+      // Fonction responsive (ratio double-page 32:9) avec max 90%
+      function resizeFlipbook() {
+        const maxWidth = window.innerWidth * 0.9;
+        const maxHeight = window.innerHeight * 0.9;
+
+        let width = maxWidth;
+        let height = width * 9 / 32;
+
+        if (height > maxHeight) {
+          height = maxHeight;
+          width = height * 32 / 9;
+        }
+
+        flipbook.css({ width: width + "px", height: height + "px" });
+
+        if (flipbook.data("initialized")) {
+          flipbook.turn("size", width, height);
+        }
+      }
+
+      // Initialisation Turn.js avec animation plus naturelle
+      flipbook.turn({
+        display: "double",
+        autoCenter: true,
+        elevation: 100,       // profondeur du pli plus réaliste
+        gradients: true,
+        acceleration: true,
+        duration: 1000,       // durée du flip en ms
+        when: {
+          turned: function () {
+            flipbook.data("initialized", true);
+          },
+        },
+      });
+
+      // Navigation flèches
+      $("#next").on("click", () => flipbook.turn("next"));
+      $("#prev").on("click", () => flipbook.turn("previous"));
+
+      // Bouton plein écran
+      const fullscreenBtn = document.getElementById("fullscreen-btn");
+      fullscreenBtn.addEventListener("click", () => {
+        const elem = document.documentElement;
+        if (!document.fullscreenElement) {
+          elem.requestFullscreen().catch(err => console.error(err));
+          fullscreenBtn.textContent = "✕ Quitter plein écran";
+        } else {
+          document.exitFullscreen();
+          fullscreenBtn.textContent = "⛶ Plein écran";
+        }
+        // Redimensionner après passage en plein écran
+        setTimeout(resizeFlipbook, 100);
+      });
+
+      // Redimensionnement
+      $(window).on("resize", resizeFlipbook);
+      resizeFlipbook();
+    });
+  </script>
+</body>
+</html>
+
