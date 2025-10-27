@@ -20,7 +20,7 @@
 
     #flipbook-container {
       position: relative;
-      display: inline-block; /* pour que les flèches se positionnent correctement */
+      display: inline-block;
     }
 
     #flipbook {
@@ -45,7 +45,6 @@
       background-color: #000;
     }
 
-    /* Flèches flottantes sous le flipbook */
     .arrow {
       position: absolute;
       bottom: -60px;
@@ -65,7 +64,6 @@
     #prev { left: 0; }
     #next { right: 0; }
 
-    /* Bouton plein écran */
     #fullscreen-btn {
       position: absolute;
       top: 20px;
@@ -87,9 +85,9 @@
 </head>
 
 <body>
-  <!-- Conteneur Flipbook -->
   <div id="flipbook-container">
     <div id="flipbook">
+      <!-- Pages du flipbook -->
       <div class="page"><img src="pages/page-001.png" alt="Page 1"></div>
       <div class="page"><img src="pages/page-002.png" alt="Page 2"></div>
       <div class="page"><img src="pages/page-003.png" alt="Page 3"></div>
@@ -112,14 +110,13 @@
       <div class="page"><img src="pages/page-020.png" alt="Page 20"></div>
     </div>
 
-    <!-- Flèches navigation -->
     <div id="prev" class="arrow">❮</div>
     <div id="next" class="arrow">❯</div>
   </div>
 
-  <!-- Bouton plein écran -->
   <div id="fullscreen-btn">⛶ Plein écran</div>
 
+  <!-- Scripts -->
   <script src="jquery.min.js"></script>
   <script src="turn.js"></script>
 
@@ -127,7 +124,6 @@
     $(document).ready(function () {
       const flipbook = $("#flipbook");
 
-      // Fonction responsive (ratio double-page 32:9) avec max 90%
       function resizeFlipbook() {
         const maxWidth = window.innerWidth * 0.9;
         const maxHeight = window.innerHeight * 0.9;
@@ -147,14 +143,13 @@
         }
       }
 
-      // Initialisation Turn.js avec animation plus naturelle
       flipbook.turn({
         display: "double",
         autoCenter: true,
-        elevation: 100,       // profondeur du pli plus réaliste
+        elevation: 100,
         gradients: true,
         acceleration: true,
-        duration: 1000,       // durée du flip en ms
+        duration: 1000,
         when: {
           turned: function () {
             flipbook.data("initialized", true);
@@ -162,11 +157,9 @@
         },
       });
 
-      // Navigation flèches
       $("#next").on("click", () => flipbook.turn("next"));
       $("#prev").on("click", () => flipbook.turn("previous"));
 
-      // Bouton plein écran
       const fullscreenBtn = document.getElementById("fullscreen-btn");
       fullscreenBtn.addEventListener("click", () => {
         const elem = document.documentElement;
@@ -177,11 +170,9 @@
           document.exitFullscreen();
           fullscreenBtn.textContent = "⛶ Plein écran";
         }
-        // Redimensionner après passage en plein écran
         setTimeout(resizeFlipbook, 100);
       });
 
-      // Redimensionnement
       $(window).on("resize", resizeFlipbook);
       resizeFlipbook();
     });
